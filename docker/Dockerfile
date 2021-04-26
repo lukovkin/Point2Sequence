@@ -1,0 +1,23 @@
+FROM nvcr.io/nvidia/tensorflow:21.03-tf1-py3
+
+ENV TF_RUNTIME=AMD64
+
+WORKDIR /app
+
+COPY ./ /app
+
+WORKDIR /app/tf_ops
+RUN ./tf_link.sh
+
+WORKDIR /app/tf_ops/3d_interpolation
+RUN ./tf_interpolate_compile.sh
+
+WORKDIR /app/tf_ops/grouping
+RUN ./tf_grouping_compile.sh
+
+WORKDIR /app/tf_ops/sampling
+RUN ./tf_sampling_compile.sh
+
+WORKDIR /app
+
+CMD /bin/bash
