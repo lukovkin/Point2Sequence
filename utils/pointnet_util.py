@@ -7,7 +7,7 @@ Date: June 2018
 import os
 import sys
 
-from tf_ops.grouping.tf_grouping import query_ball_point
+# from tf_ops.grouping.tf_grouping import query_ball_point
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
