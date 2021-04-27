@@ -13,6 +13,7 @@ import socket
 import importlib
 import os
 import sys
+from functools import reduce
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
 sys.path.append(BASE_DIR)
@@ -99,8 +100,8 @@ def ModelStatistics():
     from functools import reduce
     size = lambda v: reduce(lambda x, y: x * y, v.get_shape().as_list())
     for v in tf.trainable_variables():
-        print(v.name,v.device,size(v),v.dtype)
-    print("total model size:", sum(size(v) for v in tf.trainable_variables()))
+        print((v.name,v.device,size(v),v.dtype))
+    print(("total model size:", sum(size(v) for v in tf.trainable_variables())))
 
 def get_bn_decay(batch):
     bn_momentum = tf.train.exponential_decay(
@@ -142,7 +143,7 @@ def train():
             accuracy = tf.reduce_sum(tf.cast(correct, tf.float32)) / float(BATCH_SIZE)
             tf.summary.scalar('accuracy', accuracy)
 
-            print "--- Get training operator"
+            print("--- Get training operator")
             # Get training operator
             learning_rate = get_learning_rate(batch)
             tf.summary.scalar('learning_rate', learning_rate)
@@ -221,7 +222,7 @@ def train_one_epoch(sess, ops, train_writer):
                      ops['labels_pl']: cur_batch_label,
                      ops['is_training_pl']: is_training,}
         summary, step, _, loss_val, pred_val = sess.run([ops['merged'], ops['step'],
-            ops['train_op'], ops['loss'], ops['pred']], feed_dict=feed_dict)
+                                                        ops['train_op'], ops['loss'], ops['pred']], feed_dict=feed_dict)
         train_writer.add_summary(summary, step)
         pred_val = np.argmax(pred_val, 1)
         correct = np.sum(pred_val[0:bsize] == batch_label[0:bsize])
@@ -235,7 +236,8 @@ def train_one_epoch(sess, ops, train_writer):
         batch_idx += 1
 
     TRAIN_DATASET.reset()
-        
+
+
 def eval_one_epoch(sess, ops, test_writer):
     """ ops: dict mapping from string to tf ops """
     global EPOCH_CNT
